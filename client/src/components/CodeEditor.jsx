@@ -1,7 +1,7 @@
 // client/src/components/CodeEditor.jsx
 import { useState, useEffect, useRef } from 'react';
 import Editor from '@monaco-editor/react';
-import { Button, ToggleSwitch, Alert, Select, Dropdown } from 'flowbite-react';
+import { Button, ToggleSwitch, Alert, Select, Dropdown, Tooltip } from 'flowbite-react';
 import { useSelector } from 'react-redux';
 import {
     FaPlay,
@@ -23,6 +23,7 @@ import {
     FaJs,
     FaPython,
     FaFileCode,
+    FaInfoCircle,
 } from 'react-icons/fa';
 import { SiCplusplus } from 'react-icons/si';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -206,6 +207,7 @@ export default function CodeEditor({ initialCode = {}, language = 'html', expect
     // Editor appearance and behavior options
     const [editorOptions, setEditorOptions] = useState({
         fontSize: 14,
+        fontFamily: 'Fira Code, monospace',
         wordWrap: true,
         minimap: false,
         lineNumbers: true,
@@ -465,6 +467,7 @@ export default function CodeEditor({ initialCode = {}, language = 'html', expect
 
     return (
         <div className={`flex flex-col p-4 bg-gray-50 dark:bg-gray-900 shadow-xl ${isFullScreen ? 'fixed inset-0 z-50 h-screen w-screen rounded-none' : 'h-[90vh] md:h-[800px] rounded-lg'}`}>
+            <h2 className="text-lg font-bold text-gray-700 dark:text-gray-100 mb-2">Code Editor</h2>
             <div className="flex flex-col sm:flex-row justify-between items-center p-2 mb-4 gap-4">
                 <LanguageSelector
                     selectedLanguage={selectedLanguage}
@@ -564,29 +567,63 @@ export default function CodeEditor({ initialCode = {}, language = 'html', expect
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                     >
+                        <Tooltip content="Run Code (Ctrl+Enter)">
+                            <Button
+                                gradientDuoTone="purpleToBlue"
+                                onClick={runCode}
+                                isProcessing={isRunning}
+                                disabled={isRunning}
+                                title="Run Code (Ctrl+Enter)"
+                                aria-label="Run Code"
+                            >
+                                <FaPlay className="mr-2 h-4 w-4" /> Run Code
+                            </Button>
+                        </Tooltip>
+                    </motion.div>
+                    <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
+                        <Tooltip content="Save Code">
+                            <Button
+                                gradientDuoTone="greenToBlue"
+                                onClick={saveSnippet}
+                                isProcessing={isSaving}
+                                disabled={isSaving}
+                                title="Save Code (Ctrl+S)"
+                                aria-label="Save Code"
+                            >
+                                <FaSave className="mr-2 h-4 w-4" /> Save
+                            </Button>
+                        </Tooltip>
+                    </motion.div>
+                    <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
+                        <Tooltip content="Reset Code">
+                            <Button
+                                outline
+                                gradientDuoTone="pinkToOrange"
+                                onClick={resetCode}
+                                title="Reset code"
+                                aria-label="Reset Code"
+                            >
+                                <FaRedo className="mr-2 h-4 w-4" /> Reset
+                            </Button>
+                        </Tooltip>
+                    </motion.div>
+                    <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
                         <Button
+                            outline
                             gradientDuoTone="purpleToBlue"
-                            onClick={runCode}
-                            isProcessing={isRunning}
-                            disabled={isRunning}
-                            title="Run Code (Ctrl+Enter)"
+                            onClick={copyCurrentCode}
+                            title="Copy Code"
+                            aria-label="Copy Code"
                         >
-                            <FaPlay className="mr-2 h-4 w-4" /> Run Code
-                        </Button>
-                    </motion.div>
-                    <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                    >
-                        <Button outline gradientDuoTone="pinkToOrange" onClick={resetCode} title="Reset code">
-                            <FaRedo className="mr-2 h-4 w-4" /> Reset
-                        </Button>
-                    </motion.div>
-                    <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                    >
-                        <Button outline gradientDuoTone="purpleToBlue" onClick={copyCurrentCode} title="Copy Code">
                             <FaCopy className="mr-2 h-4 w-4" /> Copy Code
                         </Button>
                     </motion.div>
@@ -597,9 +634,6 @@ export default function CodeEditor({ initialCode = {}, language = 'html', expect
                         <Dropdown label="Options" inline>
                             <Dropdown.Item icon={FaMagic} onClick={formatCode}>
                                 Format
-                            </Dropdown.Item>
-                            <Dropdown.Item icon={FaSave} onClick={saveSnippet} disabled={isSaving}>
-                                Save &amp; Share
                             </Dropdown.Item>
                             <Dropdown.Item
                                 icon={isFullScreen ? FaCompress : FaExpand}
@@ -632,9 +666,30 @@ export default function CodeEditor({ initialCode = {}, language = 'html', expect
                 </div>
             </div>
             {shareMessage && (
-                <Alert color={shareMessage.includes('Failed') ? 'failure' : 'success'} className="mb-4">
+                <Alert
+                    color={shareMessage.includes('Failed') ? 'failure' : 'success'}
+                    className="mb-4"
+                    aria-live="polite"
+                >
                     {shareMessage}
                 </Alert>
+            )}
+            {runError && (
+                <div className="mb-4">
+                    <h3 className="text-sm font-semibold text-red-700 dark:text-red-300 mb-1">Errors</h3>
+                    <Alert color="failure" aria-live="polite">
+                        <span className="font-medium">Code execution failed.</span>
+                        <Tooltip content={runError}>
+                            <span
+                                tabIndex={0}
+                                className="ml-2 underline cursor-help inline-flex items-center gap-1"
+                                aria-label="View error details"
+                            >
+                                <FaInfoCircle /> Details
+                            </span>
+                        </Tooltip>
+                    </Alert>
+                </div>
             )}
             <div className="flex-1 flex flex-col md:flex-row gap-4 overflow-hidden">
                 <div
@@ -683,7 +738,7 @@ export default function CodeEditor({ initialCode = {}, language = 'html', expect
                         </div>
                         <div className="flex-1 rounded-md overflow-hidden flex flex-col">
                             <Editor
-                                className="flex-1"
+                                className="flex-1 font-mono"
                                 beforeMount={initializeMonaco}
                                 onMount={(editor) => {
                                     editorRef.current = editor;
@@ -696,9 +751,11 @@ export default function CodeEditor({ initialCode = {}, language = 'html', expect
                                 value={selectedFile.code}
                                 theme={editorOptions.theme}
                                 onChange={handleCodeChange}
+                                aria-label="Code editor"
                                 options={{
                                     minimap: { enabled: editorOptions.minimap },
                                     fontSize: editorOptions.fontSize,
+                                    fontFamily: editorOptions.fontFamily,
                                     lineNumbers: editorOptions.lineNumbers ? 'on' : 'off',
                                     wordWrap: editorOptions.wordWrap ? 'on' : 'off',
                                     smoothScrolling: true,
@@ -708,6 +765,7 @@ export default function CodeEditor({ initialCode = {}, language = 'html', expect
                                     padding: { top: 10, bottom: 10 },
                                     tabCompletion: 'on',
                                     suggestOnTriggerCharacters: true,
+                                    ariaLabel: 'Code editor',
                                 }}
                             />
                             <div className="px-2 py-1 bg-gray-200 dark:bg-gray-900 text-xs font-mono flex justify-between text-gray-700 dark:text-gray-300">
