@@ -77,6 +77,7 @@ export default function ExecutionVisualizer() {
                 line: event.line,
                 label: `L${event.line}: ${lineContent.substring(0, 25)}${lineContent.length > 25 ? '...' : ''}`,
                 type: type,
+                fullLine: lineContent,
             };
         });
 
@@ -133,6 +134,9 @@ export default function ExecutionVisualizer() {
             .style('font-family', 'monospace')
             .style('font-size', '12px')
             .text(d => d.label);
+
+        // Show the full source line on hover for better context
+        node.append('title').text(d => d.fullLine);
 
         const drag = (simulation) => {
             function dragstarted(event, d) {
@@ -319,11 +323,22 @@ export default function ExecutionVisualizer() {
                 )}
                 {currentStep >= 0 && events[currentStep] && (
                     <div className="mb-4">
-                        <p className="font-semibold">Step {currentStep + 1} of {events.length} (line {events[currentStep].line})</p>
+                        <p className="font-semibold">Step {currentStep + 1} of {events.length} ({events[currentStep].event} at line {events[currentStep].line})</p>
                         <h4 className="font-semibold mt-2">Local Variables:</h4>
                         <pre className="text-sm bg-gray-100 dark:bg-gray-700 p-2 rounded max-h-24 overflow-auto">
                             <code>{JSON.stringify(events[currentStep].locals || {}, null, 2)}</code>
                         </pre>
+                        {events[currentStep].stack && (
+                            <>
+                                <h4 className="font-semibold mt-2">Call Stack:</h4>
+                                <pre className="text-sm bg-gray-100 dark:bg-gray-700 p-2 rounded max-h-24 overflow-auto">
+                                    <code>{events[currentStep].stack.join(' -> ')}</code>
+                                </pre>
+                            </>
+                        )}
+                        {events[currentStep].event === 'return' && events[currentStep].return && (
+                            <p className="mt-2 text-sm">Return Value: {events[currentStep].return}</p>
+                        )}
                     </div>
                 )}
                 <svg ref={svgRef}></svg>

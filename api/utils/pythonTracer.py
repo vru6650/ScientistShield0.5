@@ -1,23 +1,52 @@
 import sys
 import json
 import io
-import runpy
 
 traces = []
+stack = []
+target_file = None
 
 
 def tracefunc(frame, event, arg):
-    if event == 'line':
+    if frame.f_code.co_filename != target_file:
+        return None
+    if event == 'call':
+        stack.append(frame.f_code.co_name)
         traces.append({
-            'event': 'step',
+            'event': 'call',
+            'func': frame.f_code.co_name,
             'line': frame.f_lineno,
-            'locals': {k: repr(v) for k, v in frame.f_locals.items()},
+            'stack': list(stack),
+            'locals': {k: repr(v) for k, v in frame.f_locals.items() if k != '__builtins__'},
         })
-    return tracefunc
+        return tracefunc
+    elif event == 'line':
+        traces.append({
+            'event': 'line',
+            'line': frame.f_lineno,
+            'stack': list(stack),
+            'locals': {k: repr(v) for k, v in frame.f_locals.items() if k != '__builtins__'},
+        })
+        return tracefunc
+    elif event == 'return':
+        traces.append({
+            'event': 'return',
+            'func': frame.f_code.co_name,
+            'line': frame.f_lineno,
+            'stack': list(stack),
+            'return': repr(arg),
+        })
+        if stack:
+            stack.pop()
+        return tracefunc
+    else:
+        return tracefunc
 
 def main(script_path):
-    global traces
+    global traces, stack, target_file
     traces = []
+    stack = []
+    target_file = script_path
     with open(script_path, 'r') as f:
         code = f.read()
     stdout_buffer = io.StringIO()

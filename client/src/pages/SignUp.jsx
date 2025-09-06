@@ -5,10 +5,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-import { signUpUser } from '../services/authService'; // <-- Import our new function
+import { signUpUser } from '../services/authService';
 import OAuth from '../components/OAuth';
+import PasswordInput from '../components/PasswordInput';
 
-// 1. Define a more robust validation schema for sign-up
 const signUpSchema = z.object({
   username: z
       .string()
@@ -22,19 +22,16 @@ const signUpSchema = z.object({
       .regex(/[a-zA-Z]/, 'Password must contain at least one letter.')
       .regex(/[0-9]/, 'Password must contain at least one number.'),
   confirmPassword: z.string(),
-})
-    .refine((data) => data.password === data.confirmPassword, {
-      message: "Passwords do not match.",
-      path: ["confirmPassword"], // Point the error to the confirmPassword field
-    });
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match.",
+  path: ["confirmPassword"],
+});
 
 export default function SignUp() {
-  // We still use local state for loading and API errors
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // 2. Set up React Hook Form
   const {
     register,
     handleSubmit,
@@ -43,7 +40,6 @@ export default function SignUp() {
     resolver: zodResolver(signUpSchema),
   });
 
-  // 3. The new submit handler for our form
   const handleFormSubmit = async (formData) => {
     setLoading(true);
     setErrorMessage(null);
@@ -58,8 +54,8 @@ export default function SignUp() {
   };
 
   return (
-      <div className='min-h-screen mt-20'>
-        <div className='flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5'>
+      <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 dark:from-gray-900 dark:via-gray-900 dark:to-black p-3'>
+        <div className='flex p-6 max-w-3xl w-full bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl shadow-2xl flex-col md:flex-row md:items-center gap-5'>
           {/* left */}
           <div className='flex-1'>
             <Link to='/' className='font-bold dark:text-white text-4xl'>
@@ -68,7 +64,7 @@ export default function SignUp() {
             </span>
               Blog
             </Link>
-            <p className='text-sm mt-5'>
+            <p className='text-sm mt-5 text-gray-700 dark:text-gray-300'>
               This is a demo project. You can sign up with your email and password
               or with Google.
             </p>
@@ -77,8 +73,8 @@ export default function SignUp() {
           <div className='flex-1'>
             <form
                 className='flex flex-col gap-4'
-                onSubmit={handleSubmit(handleFormSubmit)} // 4. Use RHF's handleSubmit
-                noValidate // Disable native browser validation
+                onSubmit={handleSubmit(handleFormSubmit)}
+                noValidate
             >
               <div>
                 <Label value='Your username' />
@@ -86,9 +82,9 @@ export default function SignUp() {
                     type='text'
                     placeholder='Username'
                     id='username'
-                    {...register('username')} // 5. Register the input
+                    {...register('username')}
                 />
-                {errors.username && ( // 6. Show field-specific error
+                {errors.username && (
                     <p className='text-red-500 text-sm mt-1'>{errors.username.message}</p>
                 )}
               </div>
@@ -106,8 +102,7 @@ export default function SignUp() {
               </div>
               <div>
                 <Label value='Your password' />
-                <TextInput
-                    type='password'
+                <PasswordInput
                     placeholder='Password'
                     id='password'
                     {...register('password')}
@@ -118,8 +113,7 @@ export default function SignUp() {
               </div>
               <div>
                 <Label value='Confirm your password' />
-                <TextInput
-                    type='password'
+                <PasswordInput
                     placeholder='Confirm Password'
                     id='confirmPassword'
                     {...register('confirmPassword')}

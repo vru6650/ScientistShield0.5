@@ -227,8 +227,12 @@ export const updateChapter = async (req, res, next) => {
     if (contentType !== undefined) updateFields.contentType = contentType;
     if (initialCode !== undefined) updateFields.initialCode = initialCode;
     if (expectedOutput !== undefined) updateFields.expectedOutput = expectedOutput;
-    if (quizId !== undefined) {
-        updateFields.quizId = contentType === 'quiz' ? quizId : undefined;
+    if (contentType !== undefined && contentType !== 'quiz') {
+        // Ensure stale quiz references are removed when a chapter is
+        // converted from a quiz to another content type.
+        updateFields.quizId = undefined;
+    } else if (quizId !== undefined) {
+        updateFields.quizId = quizId;
     }
 
     try {

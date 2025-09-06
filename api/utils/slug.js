@@ -25,6 +25,11 @@ export function generateSlug(title) {
 
     return trimmed
         .toLowerCase()
+        // Normalize the string so diacritics are separate code points
+        // (e.g. "é" -> "e\u0301") allowing them to be stripped below.
+        .normalize('NFKD')
+        // Remove all diacritic marks that may remain after normalization
+        .replace(/[\u0300-\u036f]/g, '')
         // Treat underscores as hyphens for word separation
         .replace(/_/g, '-')
         // Remove all characters except letters, numbers, spaces and hyphens

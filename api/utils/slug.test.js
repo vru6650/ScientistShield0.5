@@ -1,3 +1,4 @@
+
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { generateSlug } from './slug.js';
@@ -25,6 +26,12 @@ test('generateSlug collapses whitespace and trims hyphens', () => {
 test('generateSlug returns empty string when given only whitespace', () => {
     const slug = generateSlug('   ');
     assert.strictEqual(slug, '');
+});
+
+test('generateSlug strips diacritics from characters', () => {
+    const slug = generateSlug('Café déjà vu');
+    // The accented characters should be converted to their ASCII equivalents
+    assert.strictEqual(slug, 'cafe-deja-vu');
 });
 
 test('generateSlug throws an error when input is not a string', () => {
