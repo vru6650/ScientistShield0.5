@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
-import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useMotionValueEvent, useSpring } from 'framer-motion';
 import { useEffect, useState, useRef } from 'react';
 
 import { toggleTheme } from '../redux/theme/themeSlice';
@@ -102,7 +102,8 @@ export default function Header() {
   const [isCommandMenuOpen, setIsCommandMenuOpen] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // NEW: State for the custom dropdown
-  const { scrollY } = useScroll();
+  const { scrollY, scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 20 });
   const headerRef = useRef(null);
 
   const handleMouseMove = (e) => {
@@ -175,6 +176,10 @@ export default function Header() {
 
   return (
       <>
+        <motion.div
+            className='fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 z-[60] origin-left'
+            style={{ scaleX: progress }}
+        />
         <motion.header
             className='fixed top-0 left-0 right-0 z-50 p-2 sm:p-3'
             initial={{ y: -100 }}
@@ -215,9 +220,17 @@ export default function Header() {
                   const isActive = path === link.path;
                   return (
                       <motion.div variants={navItemVariants} key={link.path}>
-                        <Link id={link.id} to={link.path} className='relative px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors'>
-                          {isActive && (<motion.span layoutId='active-pill' className='absolute inset-0 bg-gray-100 dark:bg-gray-700 rounded-full' style={{ borderRadius: 9999 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} />)}
+                        <Link id={link.id} to={link.path} className='relative px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors group'>
+                          {isActive && (
+                              <motion.span
+                                  layoutId='active-pill'
+                                  className='absolute inset-0 bg-gray-100 dark:bg-gray-700 rounded-full'
+                                  style={{ borderRadius: 9999 }}
+                                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                              />
+                          )}
                           <span className='relative z-10'>{link.label}</span>
+                          <span className='absolute left-0 bottom-0 w-full h-0.5 bg-gradient-to-r from-cyan-500 to-purple-600 scale-x-0 group-hover:scale-x-100 transition-transform origin-left'></span>
                         </Link>
                       </motion.div>
                   );
