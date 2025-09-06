@@ -155,7 +155,7 @@ function UserProfileDropdown({ currentUser, onSignOut }) {
       <>
         <div className="relative" ref={dropdownRef}>
           <Avatar
-              alt='user'
+              alt={currentUser.username || 'user avatar'}
               img={currentUser.profilePicture}
               rounded
               bordered
@@ -346,14 +346,14 @@ export default function Header() {
               <div className='flex items-center gap-3 md:order-2'>
                 <Magnetic>
                   <Tooltip content="Search (⌘+K)">
-                    <Button className='w-12 h-10' color='gray' pill onClick={() => setIsCommandMenuOpen(true)}>
+                    <Button aria-label='Open search menu' className='w-12 h-10' color='gray' pill onClick={() => setIsCommandMenuOpen(true)}>
                       <AiOutlineSearch />
                     </Button>
                   </Tooltip>
                 </Magnetic>
                 <Magnetic>
                   <Tooltip content="Toggle Theme">
-                    <Button className='w-12 h-10 hidden sm:inline' color='gray' pill onClick={() => dispatch(toggleTheme())}>
+                    <Button aria-label='Toggle theme' className='w-12 h-10 hidden sm:inline' color='gray' pill onClick={() => dispatch(toggleTheme())}>
                       <AnimatePresence mode='wait' initial={false}>
                         <motion.span key={theme} initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }} transition={{ duration: 0.2 }}>
                           {theme === 'light' ? <FaSun /> : <FaMoon />}
@@ -368,7 +368,7 @@ export default function Header() {
                 ) : (
                     <Link to='/sign-in'><Button gradientDuoTone='purpleToBlue' outline>Sign In</Button></Link>
                 )}
-                <Navbar.Toggle />
+                <Navbar.Toggle aria-label='Toggle navigation menu' />
               </div>
               <Navbar.Collapse>
                 {navLinks.map((link) => (
