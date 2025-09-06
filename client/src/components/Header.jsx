@@ -8,7 +8,7 @@ import {
   AiOutlineFileAdd,
   AiOutlineLogout,
 } from 'react-icons/ai';
-import { FaMoon, FaSun, FaHome, FaInfoCircle, FaCode } from 'react-icons/fa';
+import { FaMoon, FaSun, FaHome, FaInfoCircle, FaCode, FaLaptopCode, FaChartLine } from 'react-icons/fa';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
@@ -235,6 +235,8 @@ export default function Header() {
     { label: 'Home', path: '/', icon: <FaHome /> },
     { label: 'About', path: '/about', icon: <FaInfoCircle /> },
     { label: 'Projects', path: '/projects', icon: <FaCode /> },
+    { label: 'Code Editor', path: '/tryit', icon: <FaLaptopCode /> },
+    { label: 'Code Visualizer', path: '/visualizer', icon: <FaChartLine /> },
   ];
 
   const handleMouseMove = (e) => {
