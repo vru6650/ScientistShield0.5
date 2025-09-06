@@ -1,7 +1,6 @@
-import React from 'react';
 import { useLocation } from 'react-router-dom';
 import CodeEditor from '../components/CodeEditor';
-import { Alert } from 'flowbite-react';
+import { Alert, Spinner } from 'flowbite-react';
 import useCodeSnippet from '../hooks/useCodeSnippet';
 
 export default function TryItPage() {
@@ -28,15 +27,17 @@ export default function TryItPage() {
     if (snippetId) {
         if (isLoading || !snippet) {
             return (
-                <div className="min-h-screen p-6 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-                    <div className="max-w-6xl mx-auto">Loading...</div>
+                <div className="min-h-screen p-6 bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+                    <Spinner size="xl" aria-label="Loading code snippet" />
                 </div>
             );
         }
         if (error) {
             return (
-                <div className="min-h-screen p-6 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-                    <div className="max-w-6xl mx-auto">{error}</div>
+                <div className="min-h-screen p-6 bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+                    <Alert color="failure" className="w-full max-w-lg text-center">
+                        <span className="font-medium">Error:</span> {error}
+                    </Alert>
                 </div>
             );
         }
@@ -69,7 +70,7 @@ export default function TryItPage() {
                 {/* Optional: Add an Alert to explain the page's purpose */}
                 <Alert color="info" className="mb-8">
                     <p className="font-semibold">Live Code Editor</p>
-                    This is a sandbox environment for testing code snippets. Any changes you make will appear in the "Live Output" window.
+                    This is a sandbox environment for testing code snippets. Any changes you make will appear in the &quot;Live Output&quot; window.
                 </Alert>
 
                 <CodeEditor
