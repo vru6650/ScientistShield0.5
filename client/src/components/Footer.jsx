@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { footerLinks, socialMediaLinks } from '../data/footerData'; // Adjust path if needed
 import FooterWave from './FooterWave';
+import './Footer.css';
 
 // --- A component for the interactive aurora background ---
 const AuroraBackground = () => {
@@ -65,18 +66,18 @@ const AuroraBackground = () => {
 export default function FooterCom() {
     const [isVisible, setIsVisible] = useState(false);
     const [email, setEmail] = useState('');
+    const [scrollProgress, setScrollProgress] = useState(0);
 
-    // --- Debounced Scroll Visibility Toggle ---
+    // --- Debounced Scroll Visibility Toggle & Progress ---
     useEffect(() => {
         let timeout;
         const handleScroll = () => {
             clearTimeout(timeout);
             timeout = setTimeout(() => {
-                if (window.scrollY > 300) {
-                    setIsVisible(true);
-                } else {
-                    setIsVisible(false);
-                }
+                const position = window.scrollY;
+                const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+                setScrollProgress((position / totalHeight) * 100);
+                setIsVisible(position > 300);
             }, 100); // Debounce scroll event
         };
 
@@ -114,7 +115,7 @@ export default function FooterCom() {
     return (
         <footer className="relative mt-20">
             <FooterWave />
-            <div className='relative z-10 bg-gray-200/50 dark:bg-gray-800/50 backdrop-blur-xl border-t border-gray-300 dark:border-gray-700 overflow-hidden'> {/* Increased blur, added overflow-hidden */}
+            <div className='relative z-10 bg-gray-200/50 dark:bg-gray-800/50 backdrop-blur-xl border-t border-gray-300 dark:border-gray-700 overflow-hidden footer-gradient-bg'> {/* Increased blur, added overflow-hidden */}
                 <AuroraBackground />
 
                 <div className='w-full max-w-7xl mx-auto py-12 px-6 relative z-20'> {/* Increased padding, added z-20 */}
@@ -183,7 +184,7 @@ export default function FooterCom() {
                                         whileHover={{ y: -5, scale: 1.2, color: '#35B8A8' }} // More pronounced hover, add color
                                         whileTap={{ scale: 0.9 }}
                                         transition={{ type: "spring", stiffness: 300, damping: 10 }}
-                                        className="text-gray-500 dark:text-gray-400" // Base color for icons
+                                        className="text-gray-500 dark:text-gray-400 transition-colors duration-300" // Base color for icons
                                     >
                                         <Footer.Icon
                                             href={social.href}
@@ -204,13 +205,28 @@ export default function FooterCom() {
                 {isVisible && (
                     <motion.button
                         onClick={scrollToTop}
-                        className='fixed bottom-5 right-5 z-50 h-14 w-14 bg-accent-teal text-white rounded-full shadow-xl hover:bg-professional-blue-700 focus:outline-none focus:ring-4 focus:ring-professional-blue-400 focus:ring-offset-2 flex items-center justify-center' // Larger, bolder button with shadow
+                        className='fixed bottom-5 right-5 z-50 h-14 w-14 bg-accent-teal text-white rounded-full shadow-xl hover:bg-professional-blue-700 focus:outline-none focus:ring-4 focus:ring-professional-blue-400 focus:ring-offset-2 flex items-center justify-center relative' // Larger, bolder button with shadow
                         aria-label='Go to top of page'
                         initial={{ opacity: 0, scale: 0.7, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.7, y: 20 }}
                         transition={{ ease: "backOut", duration: 0.3 }} // Bouncier entrance/exit
                     >
+                        <svg className="absolute inset-0 h-full w-full -rotate-90" viewBox="0 0 36 36">
+                            <circle className="text-white/30" stroke="currentColor" strokeWidth="3" fill="none" cx="18" cy="18" r="16" />
+                            <motion.circle
+                                className="text-white"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                                fill="none"
+                                cx="18"
+                                cy="18"
+                                r="16"
+                                strokeDasharray="100"
+                                strokeLinecap="round"
+                                animate={{ strokeDashoffset: 100 - scrollProgress }}
+                            />
+                        </svg>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
                         </svg>
