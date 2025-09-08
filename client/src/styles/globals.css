@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './theme.css';
+
+body {
+  background-color: hsl(var(--bg));
+  color: hsl(var(--text));
+}
+
+::selection {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-fg));
+}
+
+:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-fg));
+  padding: 0.5rem 1rem;
+  z-index: 100;
+  transition: top 0.2s;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}

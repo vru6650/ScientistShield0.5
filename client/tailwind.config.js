@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+import plugin from 'tailwindcss/plugin';
 import flowbite from 'flowbite/plugin';
 import tailwindScrollbar from 'tailwind-scrollbar';
 
@@ -10,52 +11,41 @@ export default {
   ],
   darkMode: 'class',
   theme: {
+    container: {
+      center: true,
+      padding: '1rem',
+      screens: {
+        '2xl': '1400px',
+      },
+    },
     extend: {
       colors: {
-        'professional-blue': {
-          50: '#F0F7FF',
-          100: '#E0EEFF',
-          200: '#B8D4F7',
-          300: '#8EBBEF',
-          400: '#64A2E7',
-          500: '#3A8ADF',
-          600: '#1D72CE',
-          700: '#1A5DA2',
-          800: '#174878',
-          900: '#143859',
-        },
-        'accent-teal': '#35B8A8',
-        'subtle-gray': {
-          50: '#F7F7F7',
-          100: '#E9E9E9',
-          200: '#D6D6D6',
-          300: '#C2C2C2',
-          400: '#AFAFAF',
-          500: '#9B9B9B',
-          600: '#878787',
-          700: '#737373',
-          800: '#5F5F5F',
-          900: '#4A4A4A',
-        },
-        // --- Your custom Matrix green color ---
-        'matrix-green': '#00ff41',
-        // ------------------------------------
+        bg: 'hsl(var(--bg) / <alpha-value>)',
+        surface: 'hsl(var(--surface) / <alpha-value>)',
+        text: 'hsl(var(--text) / <alpha-value>)',
+        muted: 'hsl(var(--muted) / <alpha-value>)',
+        primary: 'hsl(var(--primary) / <alpha-value>)',
+        'primary-fg': 'hsl(var(--primary-fg) / <alpha-value>)',
+        danger: 'hsl(var(--danger) / <alpha-value>)',
+        ring: 'hsl(var(--ring) / <alpha-value>)',
+        border: 'hsl(var(--border) / <alpha-value>)',
       },
-      backgroundImage: {
-        'professional-gradient': 'linear-gradient(to right, #1a5da2, #3a8adf, #1d72ce)',
+      borderRadius: {
+        sm: 'var(--radius-sm)',
+        md: 'var(--radius-md)',
+        lg: 'var(--radius-lg)',
       },
-      // --- New animations for staggered effects ---
-      keyframes: {
-        'card-fade-in': {
-          '0%': { opacity: 0, transform: 'translateY(20px)' },
-          '100%': { opacity: 1, transform: 'translateY(0)' },
-        },
+      boxShadow: {
+        sm: 'var(--shadow-sm)',
+        md: 'var(--shadow-md)',
       },
-      animation: {
-        'card-fade-in': 'card-fade-in 0.8s ease-out forwards',
-      },
-      // ------------------------------------------
     },
   },
-  plugins: [flowbite, tailwindScrollbar],
+  plugins: [
+    flowbite,
+    tailwindScrollbar,
+    plugin(function ({ addVariant }) {
+      addVariant('hocus', ['&:hover', '&:focus-visible']);
+    }),
+  ],
 };
