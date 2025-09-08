@@ -1,10 +1,14 @@
+import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import CodeEditor from '../components/CodeEditor';
-import { Alert, Spinner } from 'flowbite-react';
+import { Alert } from 'flowbite-react';
 import useCodeSnippet from '../hooks/useCodeSnippet';
+import Skeleton from '../ui/Skeleton.jsx';
+import { useToast } from '../ui/ToastProvider.jsx';
 
 export default function TryItPage() {
     const location = useLocation();
+    const { push } = useToast();
     const searchParams = new URLSearchParams(location.search);
     const stateCode = location.state?.code;
     const stateLanguage = location.state?.language;
@@ -28,7 +32,7 @@ export default function TryItPage() {
         if (isLoading || !snippet) {
             return (
                 <div className="min-h-screen p-6 bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-                    <Spinner size="xl" aria-label="Loading code snippet" />
+                    <Skeleton className="h-32 w-full" />
                 </div>
             );
         }
@@ -56,6 +60,21 @@ export default function TryItPage() {
             [initialLanguage]: initialCode || defaultCodeMessage,
         };
     }
+
+    useEffect(() => {
+        const handleKey = (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                e.preventDefault();
+                push('Run code');
+            }
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                push('Save code');
+            }
+        };
+        window.addEventListener('keydown', handleKey);
+        return () => window.removeEventListener('keydown', handleKey);
+    }, [push]);
 
     return (
         <div className="min-h-screen p-6 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">

@@ -1,10 +1,12 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { Spinner } from 'flowbite-react';
 import 'highlight.js/styles/atom-one-dark.css';
 
 // Import layout and route protection components statically
 import MainLayout from './components/MainLayout';
+import AppShell from './ui/AppShell.jsx';
+import Sidebar from './ui/Sidebar.jsx';
 import PrivateRoute from './components/PrivateRoute';
 import OnlyAdminPrivateRoute from './components/OnlyAdminPrivateRoute';
 
@@ -45,11 +47,17 @@ const LoadingFallback = () => (
 );
 
 export default function App() {
+    const useNewUI = localStorage.getItem('newUI') !== 'false';
+    const ShellLayout = () => (
+        <AppShell sidebar={<Sidebar />}>
+            <Outlet />
+        </AppShell>
+    );
     return (
         <BrowserRouter>
             <Suspense fallback={<LoadingFallback />}>
                 <Routes>
-                    <Route path="/" element={<MainLayout />}>
+                    <Route path="/" element={useNewUI ? <ShellLayout /> : <MainLayout />}>
                         <Route index element={<Home />} />
                         <Route path="about" element={<About />} />
                         <Route path="search" element={<Search />} />

@@ -1,7 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ExecutionVisualizer from '../components/ExecutionVisualizer';
+import { useToast } from '../ui/ToastProvider.jsx';
 
 export default function CodeVisualizer() {
+    const { push } = useToast();
+
+    useEffect(() => {
+        const handleKey = (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                e.preventDefault();
+                push('Run visualization');
+            }
+        };
+        window.addEventListener('keydown', handleKey);
+        return () => window.removeEventListener('keydown', handleKey);
+    }, [push]);
+
     return (
         <div className="min-h-screen p-6 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
             <div className="max-w-4xl mx-auto">
