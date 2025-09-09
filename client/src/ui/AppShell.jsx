@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
 import ThemeToggle from './ThemeToggle';
+import Footer from '../components/Footer';
 
 export default function AppShell({ sidebar, children }) {
   return (
-    <div className="min-h-screen bg-bg text-text">
+    <div className="flex min-h-screen flex-col bg-bg text-text">
       <a href="#main" className="skip-to-content">
         Skip to content
       </a>
@@ -21,7 +22,7 @@ export default function AppShell({ sidebar, children }) {
           </nav>
         </div>
       </header>
-      <div className="container grid gap-4 md:grid-cols-[200px_1fr]">
+      <div className="container grid flex-1 gap-4 md:grid-cols-[200px_1fr]">
         {sidebar && (
           <aside className="hidden md:block" aria-label="Sidebar">
             {sidebar}
@@ -31,6 +32,7 @@ export default function AppShell({ sidebar, children }) {
           {children}
         </main>
       </div>
+      <Footer />
     </div>
   );
 }
