@@ -2,34 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './index.css';
-import './styles/globals.css';
-import { store, persistor } from './redux/store.js';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-import { ThemeProvider } from './ui/ThemeProvider.jsx';
-import { ToastProvider } from './ui/ToastProvider.jsx';
-import { HelmetProvider } from 'react-helmet-async';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; // 1. Import
-
-// 2. Create a client
-const queryClient = new QueryClient();
+import { ThemeProvider } from './theme/ThemeProvider.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-        <PersistGate persistor={persistor}>
-            <Provider store={store}>
-                {/* 3. Wrap your app in the provider */}
-                <QueryClientProvider client={queryClient}>
-
-                    <HelmetProvider>
-                        <ThemeProvider>
-                            <ToastProvider>
-                                <App />
-                            </ToastProvider>
-                        </ThemeProvider>
-                    </HelmetProvider>
-                </QueryClientProvider>
-            </Provider>
-        </PersistGate>
-    </React.StrictMode>
+  <React.StrictMode>
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
+  </React.StrictMode>
 );
