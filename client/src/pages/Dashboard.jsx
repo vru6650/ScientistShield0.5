@@ -1,58 +1,82 @@
-// client/src/pages/Dashboard.jsx
-import { useEffect, useState, lazy, Suspense } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Spinner } from 'flowbite-react';
-import DashSidebar from '../components/DashSidebar';
+import { useEffect, useState } from 'react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card.jsx';
+import { Button } from '../components/ui/Button.jsx';
+import { Skeleton } from '../components/ui/Skeleton.jsx';
+import { Activity, FileText, Rocket } from 'lucide-react';
 
-// Dynamically import components using React.lazy
-const DashProfile = lazy(() => import('../components/DashProfile'));
-const DashPosts = lazy(() => import('../components/DashPosts'));
-const DashUsers = lazy(() => import('../components/DashUsers'));
-const DashComments = lazy(() => import('../components/DashComments'));
-const DashboardComp = lazy(() => import('../components/DashboardComp'));
-const DashTutorials = lazy(() => import('../components/DashTutorials'));
-const DashQuizzes = lazy(() => import('../components/DashQuizzes')); // NEW: Import DashQuizzes component
-
-// Create a map to associate tab names with their components.
-const componentMap = {
-    profile: DashProfile,
-    posts: DashPosts,
-    users: DashUsers,
-    comments: DashComments,
-    dash: DashboardComp,
-    tutorials: DashTutorials,
-    quizzes: DashQuizzes, // NEW: Add DashQuizzes to the map
-};
+const stats = [
+  { title: 'Posts', value: 24, icon: FileText },
+  { title: 'Quizzes', value: 5, icon: Activity },
+  { title: 'Playground Sessions', value: 12, icon: Rocket },
+];
 
 export default function Dashboard() {
-    const location = useLocation();
-    const [tab, setTab] = useState('');
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(t);
+  }, []);
 
-    useEffect(() => {
-        const urlParams = new URLSearchParams(location.search);
-        const tabFromUrl = urlParams.get('tab');
-        setTab(tabFromUrl || 'dash');
-    }, [location.search]);
+  return (
+    <div className="space-y-8">
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {stats.map(({ title, value, icon: Icon }) => (
+          <Card key={title}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{title}</CardTitle>
+              <Icon className="h-4 w-4 text-gray-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{value}</div>
+            </CardContent>
+          </Card>
+        ))}
+      </section>
 
-    const ActiveComponent = componentMap[tab];
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Activity</CardTitle>
+          <CardDescription>Latest actions from your team</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <Skeleton className="h-24 w-full" />
+          ) : (
+            <table className="w-full text-left text-sm">
+              <thead className="text-gray-500 dark:text-gray-400">
+                <tr>
+                  <th className="pb-2">User</th>
+                  <th className="pb-2">Action</th>
+                  <th className="pb-2">Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <td className="py-2 font-medium">Ada</td>
+                  <td className="py-2">Published a post</td>
+                  <td className="py-2 text-xs text-gray-500">2h ago</td>
+                </tr>
+                <tr className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <td className="py-2 font-medium">Max</td>
+                  <td className="py-2">Completed a quiz</td>
+                  <td className="py-2 text-xs text-gray-500">1d ago</td>
+                </tr>
+              </tbody>
+            </table>
+          )}
+        </CardContent>
+      </Card>
 
-    return (
-        <div className='min-h-screen flex flex-col md:flex-row'>
-            <div className='md:w-56'>
-                <DashSidebar />
-            </div>
-
-            <main className='w-full'>
-                <Suspense
-                    fallback={
-                        <div className='flex justify-center items-center min-h-screen w-full'>
-                            <Spinner size='xl' />
-                        </div>
-                    }
-                >
-                    {ActiveComponent && <ActiveComponent />}
-                </Suspense>
-            </main>
-        </div>
-    );
+      <Card>
+        <CardHeader>
+          <CardTitle>Quick Links</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-4">
+          <Button>New Post</Button>
+          <Button variant="secondary">New Quiz</Button>
+          <Button variant="ghost">Settings</Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
