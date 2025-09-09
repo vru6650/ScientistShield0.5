@@ -1,6 +1,6 @@
 import { Suspense, lazy } from 'react';
 import { Routes, Route, Outlet } from 'react-router-dom';
-import AppShell from './components/layout/AppShell.jsx';
+import AppShell from './ui/AppShell.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
 import OnlyAdminPrivateRoute from './components/OnlyAdminPrivateRoute.jsx';
 
